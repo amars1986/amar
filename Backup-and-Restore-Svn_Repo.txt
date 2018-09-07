@@ -1,0 +1,51 @@
+==========================================================================================================================================================================================
+1- First create a Directory where you want to keep backup.
+[root@testsvn /]# mkdir svnbackup
+2-Execute below command to take backup 
+[root@testsvn /]#svnadmin dump /svnrepo/repos/hyperv/ > /svnbackup/hyperv.dump
+==========================================================================================================================================================================================
+3- To restore backup svn repo you need to first create new repo
+[root@testsvn svnbackup]# svnadmin create /svnrepo/repos/hvrestore
+
+4- To restore data execute below command
+[root@testsvn svnbackup]# svnadmin load  /svnrepo/repos/hvrestore < /svnbackup/hyperv.dump
+<<< Started new transaction, based on original revision 1
+     * adding path : branches ... done.
+     * adding path : tag ... done.
+     * adding path : trunk ... done.
+
+------- Committed revision 1 >>>
+
+<<< Started new transaction, based on original revision 2
+     * adding path : trunk/Ishir repo.conf.txt ... done.
+     * adding path : trunk/SVN_Installation_Configuration.x ... done.
+     * adding path : trunk/Subversion.conf.txt ... done.
+     * adding path : trunk/repo.conf.txt ... done.
+
+------- Committed revision 2 >>>
+
+[root@testsvn svnbackup]#
+==========================================================================================================================================================================================
+To take Backup of Repo into .zip execute below command
+[root@testsvn /]# svnadmin dump /svnrepo/repos/hyperv | gzip -9 > /svnbackup/hyperv.dump.gz
+before restore this zip folder first unzip it and then execute step no.3 and 4.
+
+==========================================================================================================================================================================================
+Script to take backup of all Repos.
+
+[root@testsvn ~]# vi svnbackup.sh
+#!/bin/sh
+
+SVN_REPOSITORIES_ROOT_DIR="/svnrepo/repos/"
+BACKUP_DIRECTORY="/svnbackup/"
+
+for REPOSITORY in `ls -1 $SVN_REPOSITORIES_ROOT_DIR`
+do
+echo 'dumping repository: ' $REPOSITORY
+/usr/local/bin/svnadmin dump $SVN_REPOSITORIES_ROOT_DIR$REPOSITORY | gzip > $BACKUP_DIRECTORY$REPOSITORY'.gz'
+done
+
+
+
+
+==========================================================================================================================================================================================
